@@ -4,10 +4,10 @@ const webpush = require("web-push");
 const mongoose = require('mongoose')
 
 
-const publicVapidKey="";
-const privateVapidKey="";
+const publicVapidKey= process.env.PUBLIC_VAPID_KEY;
+const privateVapidKey= process.env.PRIVATE_VAPID_KEY;
 
-webpush.setVapidDetails("",publicVapidKey,privateVapidKey);
+webpush.setVapidDetails("mailto:sujeet1.com",publicVapidKey,privateVapidKey);
 
 
 const createNotification = async (req, res) => {

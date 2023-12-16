@@ -3,11 +3,12 @@ import React, { useState } from 'react'
 import Avatar from 'antd/lib/avatar/avatar'
 import Meta from 'antd/lib/card/Meta'
 import './style.css'
-import { uploadFile } from 'react-s3'
+// import { uploadFile } from 'react-s3'
 import { Form, Input, Card, Button } from 'antd'
 import { editProfile } from '../../reducers/authReducer'
 import ImageUploader from 'react-images-upload'
 import notificationsService from '../../services/notifications'
+import {Cloudinary} from "@cloudinary/url-gen";
 
 const Profile = () => {
   const dispatch = useDispatch()
@@ -64,18 +65,18 @@ const Profile = () => {
     }
   }
 
-  const S3_BUCKET = ''
-  const REGION = ''
-  const ACCESS_KEY = ''
-  const SECRET_ACCESS_KEY = ''
+  // const S3_BUCKET = ''
+  // const REGION = ''
+  // const ACCESS_KEY = ''
+  // const SECRET_ACCESS_KEY = ''
 
-  const config = {
-    bucketName: S3_BUCKET,
-    region: REGION,
-    dirName: 'users_profile_photo/' + user._id,
-    accessKeyId: ACCESS_KEY,
-    secretAccessKey: SECRET_ACCESS_KEY
-  }
+  // const config = {
+  //   bucketName: S3_BUCKET,
+  //   region: REGION,
+  //   dirName: 'users_profile_photo/' + user._id,
+  //   accessKeyId: ACCESS_KEY,
+  //   secretAccessKey: SECRET_ACCESS_KEY
+  // }
 
   const onFileChange = (event) => {
     setPhoto(event[0])
@@ -83,13 +84,21 @@ const Profile = () => {
   }
 
   const handleUpload = async () => {
-    await uploadFile(photo, config)
-      .then((data) => {
-        console.log(data)
-        console.log('uploaded')
-        setActive(true)
-      })
-      .catch((err) => console.error(err))
+    const cld = new Cloudinary({cloud: {cloudName: 'djuukdidx'}});
+    const uploadResponse = await cld.uploader.upload(photo, {
+      upload_preset: 'ml_default',
+    });
+    console.log(uploadResponse);
+    setActive(true)
+    
+
+    // await uploadFile(photo, config)
+    //   .then((data) => {
+    //     console.log(data)
+    //     console.log('uploaded')
+    //     setActive(true)
+    //   })
+    //   .catch((err) => console.error(err))
   }
 
   return (

@@ -2,6 +2,10 @@
   padding-left: 24px;
 }
 
+.ant-list-item-meta-content {
+  width: 100%;
+}
+
 .dropdown-div {
   text-align: right;
   height: 64px;

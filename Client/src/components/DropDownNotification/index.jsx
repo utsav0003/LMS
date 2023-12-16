@@ -63,11 +63,7 @@ const DropDownNotification = () => {
         onItemClick={onItemClick}
         onClear={onClear}
         bell={
-          <BellFilled
-            style={{
-              fontSize: 16
-            }}
-          />
+          <BellFilled style={{ fontSize: '24px', color: '#08c' }} />
         }
       >
         <NoticeIcon.Tab

@@ -23,12 +23,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error('Email is invalid')
-      }
-    }
+
   },
+  
   photo: {
     type: String,
     default: 'https://www.w3schools.com/howto/img_avatar.png'
@@ -77,13 +74,13 @@ const userSchema = new mongoose.Schema({
     default: 0
   },
   code: {
-    type: Number
+    type: String
   },
   mobile: {
     type: String,
     validate: {
       validator: function (v) {
-        return /\d{3}-\d{3}-\d{4}/.test(v)
+        return /^\d{7,15}$/.test(v)
       },
       message: (props) => `${props.value} is not a valid phone number!`
     },
