@@ -1,7 +1,7 @@
 {
-  "name": "gp-eduhub",
+  "name": "eduhub",
   "version": "1.0.0",
-  "description": "GP-Eduhub",
+  "description": "Eduhub",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
     "debug": "nodemon --inspect index.js",
     "generate-vapid-key": "web-push generate-vapid-keys"
   },
-  "author": "EslamGenedy",
+  "author": "Utsav",
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^6.5.5",
