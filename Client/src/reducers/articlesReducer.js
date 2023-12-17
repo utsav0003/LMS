@@ -55,6 +55,7 @@ export const getinitialData = () => {
   return async (dispatch) => {
     try {
       const response = await articleService.timeline(1, 5)
+      console.log(response);
       dispatch({ type: INITIAL_DATA, data: response })
     } catch (error) {
       notification.error({

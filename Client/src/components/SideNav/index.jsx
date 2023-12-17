@@ -39,7 +39,7 @@ const SideNav = (props) => {
     >
       <div
         style={{ cursor: 'pointer' }}
-        onClick={() => (window.location = 'https://gp-eduhub.github.io/')}
+        onClick={() => (window.location = '/app')}
       >
         <Logo collapsed={collapsed} />
       </div>
@@ -58,9 +58,9 @@ const SideNav = (props) => {
         <Menu.Item key="/app/calendar" icon={<CalendarOutlined />}>
           <NavLink to="/app/calendar">Calendar</NavLink>
         </Menu.Item>
-        <Menu.Item key="/app/articles" icon={<RiArticleLine />}>
+        {/* <Menu.Item key="/app/articles" icon={<RiArticleLine />}>
           <NavLink to="/app/articles">Articles</NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
         {/* <SubMenu key="sub1" icon={<TeamOutlined />} title="Groups">
           <Menu.Item key="5">Place Holder 1</Menu.Item>
           <Menu.Item key="6">Place Holder 2</Menu.Item>

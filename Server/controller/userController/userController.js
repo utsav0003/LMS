@@ -2,8 +2,6 @@ const User = require('../../models/user')
 const jwt = require('jsonwebtoken')
 const axios = require('axios')
 
-const awsEmailResisterUrl = '';
-
 const createUser = async (req, res) => {
   try {
     const user = new User(req.body)
@@ -11,22 +9,26 @@ const createUser = async (req, res) => {
     await user.save()
     const token = await user.generateAuthToken()
 
-    axios.post(awsEmailResisterUrl, {
-      InstructorEmail: user.email
-    })
-    .then(res => {
-          console.log('email resistered: ' + res)
-          User.findOneAndUpdate({code: user.code}, { isEmailRegistered: true }).exec()
-        })
-    .catch(err => {
-          console.log("can't resister email: " + err)
-          User.findOneAndUpdate({code: user.code}, { isEmailRegistered: false }).exec()
-        })
-
     res.status(201).send({ user, token })
   } catch (e) {
+    console.log("userController[14]", e);
     res.status(400).send(e)
   }
+
+  // Sample input:
+  /*
+  {
+    "name": "Sujeet1",
+    "username": "sujeet1",
+    "email": "sujeet1@gmail.com",
+    "role": "instructor",
+    "mobile": "9876543210",
+    "password": "123456789",
+    "passwordConfirm": "123456789",
+    "agreement": true
+  }
+
+  */
 }
 
 const forgetPassword = async (req, res) => {
@@ -39,6 +41,7 @@ const forgetPassword = async (req, res) => {
     res.status(200).send('Check your Email')
   } catch (e) {
     res.status(404).send('email not founded')
+    console.log("userController[44]", e);
   }
 }
 
@@ -49,8 +52,18 @@ const login = async (req, res) => {
     res.send({ user, token })
   } catch (e) {
     res.status(400).send()
-    console.log(e)
+    console.log("userController[55]", e)
   }
+
+
+  // Sample input:
+  /*
+  {
+    "email": "sujeet1@gmail.com",
+    "password": "123456789",
+    "remember": true
+  }
+  */
 }
 
 const logout = async (req, res) => {
@@ -80,6 +93,7 @@ const logout = async (req, res) => {
     res.send('You Logged out')
   } catch (e) {
     res.status(500).send({ error: e.message || e.toString() })
+    console.log("userController[86]", e);
   }
 }
 
@@ -91,25 +105,26 @@ const updateUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(id, usr, { new: true }).exec()
     const token = await user.generateAuthToken()
 
-    if (user.email !== userOld.email || !(user.isEmailRegistered)){
+    if (user.email !== userOld.email || !(user.isEmailRegistered)) {
       axios.post(awsEmailResisterUrl, {
-          InstructorEmail: user.email
-        })
+        InstructorEmail: user.email
+      })
         .then(res => {
           console.log('email resistered: ' + res)
-          User.findByIdAndUpdate(id, { isEmailRegistered :true }).exec()
+          User.findByIdAndUpdate(id, { isEmailRegistered: true }).exec()
         })
         .catch(err => {
           console.log("can't resister email: " + err)
           User.findByIdAndUpdate(id, { isEmailRegistered: false }).exec()
         })
-    }else{
+    } else {
       console.log("email is not changed or already registered")
     }
 
     res.status(201).send({ user, token })
   } catch (e) {
     res.status(400).send(e)
+    console.log("userController[117]", e);
   }
 }
 
@@ -119,6 +134,7 @@ const deleteUser = async (req, res) => {
     res.status(200).send('Deleted thanks')
   } catch (e) {
     res.status(500).send('invalid Email')
+    console.log("userController[127]", e);
   }
 }
 

@@ -28,16 +28,11 @@ const auth = require('./middleware/auth')
 const fileUpload = require('express-fileupload')
 
 app.use(
-  fileUpload({
-    debug: true,
-    createParentPath: true,
-    safeFileNames: true,
-    preserveExtension: 4
-  })
+  fileUpload()
 )
 
 mongoose
-  .connect(process.env.MONGODB_ATLAS_URI, {
+  .connect(process.env.MONGODB_COMPASS_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
@@ -58,6 +53,12 @@ app.use('/course-file', express.static('course-file'))
 app.use(cors())
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.get('/', (req, res) => { 
+  res.send('Server is up and running')
+})
+
 app.use('/users', user)
 app.use('/discussions', discussionsRouter)
 app.use('/announcements', AnnouncementsRouter)

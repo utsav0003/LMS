@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react'
 import Webcam from 'react-webcam'
 import { ReactMic } from '@cleandersonlobo/react-mic'
-import { uploadFile } from 'react-s3'
+// import { uploadFile } from 'react-s3'
 import { useSelector } from 'react-redux'
 import './../styles.css'
 import cheatingService from '../../../services/cheatingService'
@@ -28,23 +28,23 @@ const SpyLogic = (props) => {
   const ACCESS_KEY = ''
   const SECRET_ACCESS_KEY = ''
   */
-  const S3_BUCKET = ''
-  const REGION = ''
-  const ACCESS_KEY = ''
-  const SECRET_ACCESS_KEY = ''
+  // const S3_BUCKET = ''
+  // const REGION = ''
+  // const ACCESS_KEY = ''
+  // const SECRET_ACCESS_KEY = ''
 
-  const config = {
-    bucketName: S3_BUCKET,
-    region: REGION,
-    dirName: user.name + ':' + user._id,
-    accessKeyId: ACCESS_KEY,
-    secretAccessKey: SECRET_ACCESS_KEY
-  }
+  // const config = {
+  //   bucketName: S3_BUCKET,
+  //   region: REGION,
+  //   dirName: user.name + ':' + user._id,
+  //   accessKeyId: ACCESS_KEY,
+  //   secretAccessKey: SECRET_ACCESS_KEY
+  // }
 
   const handleUpload = async (file) => {
-    uploadFile(file, config)
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err))
+    // uploadFile(file, config)
+    //   .then((data) => console.log(data))
+    //   .catch((err) => console.error(err))
   }
 
   const startRecording = () => {

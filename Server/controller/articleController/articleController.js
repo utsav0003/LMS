@@ -1,73 +1,75 @@
 const Article = require('../../models/article');
 const User = require('../../models/user');
 const View = require('../../models/view');
-const Like = require('../../models/like') ; 
-const BookMarked = require('../../models/bookmark') ; 
-const Comment = require('../../models/comment') ; 
+const Like = require('../../models/like');
+const BookMarked = require('../../models/bookmark');
+const Comment = require('../../models/comment');
 const Follow = require('../../models/follow');
 const axios = require('axios');
+const port = process.env.PORT || 4000
+const baseUrl = process.env.BASE_URL || `http://localhost:${port}`
 
-const recommendationEngineUrl = 'http://127.0.0.1:5000/recommend/'
+const recommendationEngineUrl = `${baseUrl}/recommend/`
 
 const createArticle = async (req, res) => {
     try {
         const article = new Article(req.body);
         article.authorPersonId = req.user.id;
-        article.contentId = Date.now() ;
+        article.contentId = Date.now();
         await article.save()
         res.status(201).send(article)
-        await axios.get(
-          recommendationEngineUrl+'reset'
-        )
+        // await axios.get(
+        //     recommendationEngineUrl + 'reset'
+        // )
     } catch (e) {
+        console.log("articleController[25] ", e);
         res.status(400).send('error in creating Article');
     }
 }
 
 const timeline = async (req, res) => {
     try {
-      /*const { page = 1, limit } = req.query
-      const articles = await Article.find({})
-        .populate({
-          path: 'authorPersonId',
-          select: 'username name photo'
-        })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .exec();*/
-      const { page = 1, limit } = req.query
-      const userCode = req.user.code;
-      const contentIds=[];
-      const response = await axios.get(
-        recommendationEngineUrl +
-          userCode +
-          '/' +
-          limit +
-          '/' +
-          (page - 1) * limit
-      )
-            
+        /*const { page = 1, limit } = req.query
+        const articles = await Article.find({})
+          .populate({
+            path: 'authorPersonId',
+            select: 'username name photo'
+          })
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .exec();*/
+        const { page = 1, limit } = req.query
+        const userCode = req.user.code;
+        const contentIds = [];
+
+        const requestUrl = `${recommendationEngineUrl}${userCode}/${limit}/${(page - 1) * limit}`;
+        console.log("articleController.js[47] ", requestUrl);
+
+        let response = await axios.get(requestUrl);
+        // let response = undefined;
+        console.log(response.data);
+
         const data = response.data;
 
-      for (var i = 0, len = data.length; i < len; i++) {
-        contentIds.push(data[i])
-      }
+        for (var i = 0, len = data.length; i < len; i++) {
+            contentIds.push(data[i])
+        }
 
 
-      const articles = await Article.find({ contentId: contentIds })
-        .populate({
-          path: 'authorPersonId',
-          select: 'username name photo'
-        }).exec()
+        const articles = await Article.find({ contentId: contentIds })
+            .populate({
+                path: 'authorPersonId',
+                select: 'username name photo'
+            }).exec()
 
-      const count = await Article.countDocuments()
-      res.status(200).send({
-        articles,
-        totalPages: Math.ceil(count / limit),
-        currentPage: page
-      })
+        const count = await Article.countDocuments()
+        res.status(200).send({
+            articles,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page
+        })
     } catch (e) {
-        console.log(e)
+        console.log("articleController[73] ", e)
         res.status(400).send();
     }
 }
@@ -92,7 +94,7 @@ const getAllArticles = async (req, res) => {
 
 const articleId = async (req, res) => {
     try {
-        const articleId = req.params.articleId ;
+        const articleId = req.params.articleId;
         const myarticle = await Article.findById({ _id: articleId }).populate({
             path: "authorPersonId",
             select: "name photo",
@@ -116,32 +118,30 @@ const articleId = async (req, res) => {
             })
         }
 
-       
+
         /*       Get Likes For Article       */
-        const like = await Like.find({article:articleId}) ;
+        const like = await Like.find({ article: articleId });
         const alreadyLike = await Like.findOne({
             likedBy: req.user.id,
             article: req.params.articleId,
         });
 
-        var mylike ;
-        if(alreadyLike)
-        {
-            mylike = true ; 
+        var mylike;
+        if (alreadyLike) {
+            mylike = true;
         }
-        else{
-            mylike = false ; 
+        else {
+            mylike = false;
         }
-        
+
         /*       Get Status Of BookMark For Article       */
-        const bookmarked = await BookMarked.findOne({bookedBy: req.user.id, article: req.params.articleId})  ;
-        var isBooked ; 
-        if(bookmarked)
-        {
-            isBooked = true ; 
+        const bookmarked = await BookMarked.findOne({ bookedBy: req.user.id, article: req.params.articleId });
+        var isBooked;
+        if (bookmarked) {
+            isBooked = true;
         }
-        else{
-            isBooked=false ;
+        else {
+            isBooked = false;
         }
 
         /*       Get Status Of follow For Article       */
@@ -151,29 +151,29 @@ const articleId = async (req, res) => {
         if (!userToFollow) {
             throw new Error('not user to follow');
         }
-       
+
         const existingFollow = await Follow.findOne({
             user: req.user.id,
             follows: userToFollow.id,
         });
-        var isFollow  ; 
+        var isFollow;
         if (existingFollow) {
-            
-            isFollow = true ; 
+
+            isFollow = true;
         }
         else {
-            isFollow = false ; 
+            isFollow = false;
         }
 
         /*       GetComments For Article       */
 
-        const comments =await Comment.find({article:req.params.articleId}).populate({
+        const comments = await Comment.find({ article: req.params.articleId }).populate({
             path: "createdBy",
             select: "name photo",
-        }) ;
+        });
 
-       
-        res.status(200).json({length:like.length , islike:mylike ,myarticle , isBooked:isBooked , comments , isFollow     }) ; 
+
+        res.status(200).json({ length: like.length, islike: mylike, myarticle, isBooked: isBooked, comments, isFollow });
     } catch (e) {
         res.status(400).send('error in getting all Articles 2 ');
         console.log(e)
@@ -200,8 +200,8 @@ const UserArticles = async (req, res) => {
             throw new Error('You don\'t have articles');
         }
 
-     
-        res.status(201).json({myarticles});
+
+        res.status(201).json({ myarticles });
 
     } catch (e) {
         res.status(400).send('error in getting all Articles 3');
@@ -219,17 +219,16 @@ const editArticle = async (req, res) => {
         let updatedArticle = await Article.findOneAndUpdate(
             { _id: id, authorPersonId: req.user._id },
             {
-                url:article.url,
-                title:article.title,
+                url: article.url,
+                title: article.title,
                 text: article.text
-            },{
-                new: true,
-                upsert: true 
-              }
+            }, {
+            new: true,
+            upsert: true
+        }
         );
 
-        if(!updatedArticle)
-        {
+        if (!updatedArticle) {
             throw new Error('there is an error here')
         }
 
@@ -249,7 +248,7 @@ const deleteArticle = async (req, res) => {
 
 
     try {
-        const articleId = req.params.articleId ; 
+        const articleId = req.params.articleId;
 
         const deletedArticle = await Article.findById(
             { _id: articleId },
@@ -261,15 +260,15 @@ const deleteArticle = async (req, res) => {
         if (toString(deletedArticle.authorPersonId) !== toString(req.user._id)) {
             throw new Error('can\'t with the same error');
         }
-       
 
-        await Like.deleteMany({article: articleId}) ; 
 
-        await BookMarked.deleteMany({article : articleId}) ; 
+        await Like.deleteMany({ article: articleId });
 
-        await Comment.deleteMany({article:articleId});
+        await BookMarked.deleteMany({ article: articleId });
 
-        await View.deleteMany({contentId:deletedArticle.contentId}) ; 
+        await Comment.deleteMany({ article: articleId });
+
+        await View.deleteMany({ contentId: deletedArticle.contentId });
 
         deletedArticle.remove();
         res.status(200).json({

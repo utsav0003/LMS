@@ -29,7 +29,7 @@ const detectCheating = async (req, res) => {
     } else {
       var count = cheatingBatchCount.counter + 1
       if (count === 7) {
-        console.log('call lambda as count=' + count)
+        console.log('call lambda as count= ' + count)
         CheatingBatchCount.findByIdAndUpdate(cheatingBatchCount._id, {
           $set: { counter: 0 }
         }).exec()
@@ -50,22 +50,22 @@ const detectCheating = async (req, res) => {
         instructors = instructors.map((item) => item.user.email)
 
         axios.post(
-                  awsCheatingDetectionUrl,
-                  {
-                    path: user.name + ':' + user._id,
-                    username: user.name,
-                    userId: user._id,
-                    examId: req.body.examId,
-                    examType: examType,
-                    InstructorEmail: instructors,
-                    //InstructorEmail: ['omarhazem6@gmail.com']
-                  }
-                )
-                .then(console.log('lambda called without errors'))
-                .catch((e) => {
-                  console.log(e)
-                  res.status(502).send('error in lambda: ' + e)
-                })
+          awsCheatingDetectionUrl,
+          {
+            path: user.name + ':' + user._id,
+            username: user.name,
+            userId: user._id,
+            examId: req.body.examId,
+            examType: examType,
+            InstructorEmail: instructors,
+            //InstructorEmail: ['omarhazem6@gmail.com']
+          }
+        )
+          .then(console.log('lambda called without errors'))
+          .catch((e) => {
+            console.log("cheatingDetectionController.js[66]", e)
+            res.status(502).send('error in lambda: ' + e)
+          })
       } else {
         CheatingBatchCount.findByIdAndUpdate(cheatingBatchCount._id, {
           $set: { counter: count }
@@ -77,20 +77,21 @@ const detectCheating = async (req, res) => {
 
     res.status(200).send(count.toString())
   } catch (e) {
-    console.log(e)
+    console.log("cheatingDetectionController.js[80]", e)
     res.status(500).send('error in db: ' + e)
   }
 }
 
 const clear = async (req, res) => {
   try {
-    user = req.user
+    let user = req.user
     await CheatingBatchCount.findOneAndDelete({
       student: user
     }).exec()
     console.log('counter cleared')
     res.status(200).send('cleared')
   } catch (e) {
+    console.log("cheatingDetectionController.js[94]", e);
     res.status(400).send(e)
   }
 }
